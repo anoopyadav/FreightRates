@@ -1,0 +1,4 @@
+from  postgres:latest
+ENV POSTGRES_USER=postgres POSTGRES_PASSWORD=password
+COPY rates.sql /docker-entrypoint-initdb.d/
+EXPOSE 5432

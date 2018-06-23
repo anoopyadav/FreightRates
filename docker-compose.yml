@@ -1,0 +1,18 @@
+version: "3"
+services:
+    web:
+      build:
+        context: ./web
+        dockerfile: Dockerfile-web
+      ports:
+        - "5000:5000"
+      volumes:
+        - .:/code
+      depends_on:
+        - db
+    db:
+      build:
+        context: .
+        dockerfile: Dockerfile-db
+      ports:
+        - "5432:5432"
