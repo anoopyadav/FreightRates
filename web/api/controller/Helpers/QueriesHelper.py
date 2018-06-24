@@ -59,3 +59,20 @@ def get_rates_query_null(get_rates_request):
         and dest_code IN (select * from destinationports)\
         and (day >= '{0}' and day <= '{1}') Group By day Order By day;\
         ".format(get_rates_request.date_from, get_rates_request.date_to)
+
+
+def post_rates_query(post_rates_request):
+    return "insert into  prices (orig_code, dest_code, price, day)\
+            SELECT '{0}','{1}', 10, p.day from\
+              (\
+                select CURRENT_DATE + i as day\
+                  from generate_series(date '{2}'- CURRENT_DATE,\
+                 date '{3}' - CURRENT_DATE ) i\
+              ) p\
+            ".format(post_rates_request.origin_code, post_rates_request.destination_code, post_rates_request.date_from,
+                     post_rates_request.date_to)
+
+
+def check_ports_query(post_rates_request):
+    return "select count(*) from ports where code IN ('{0}', '{1}')".format(post_rates_request.origin_code,
+                                                                            post_rates_request.destination_code)

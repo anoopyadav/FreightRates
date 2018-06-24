@@ -4,12 +4,14 @@ if 'local' in os.environ:
     from web.api.controller import DbHelper
     from web.api.controller.Helpers import QueriesHelper
     from web.api.model.getrates import GetRatesRequest
+    from web.api.model.postrates import PostRatesRequest
     from web.api.controller.Helpers import resultshelper
     port = 5001
 else:
     from controller import DbHelper
     from controller.Helpers import QueriesHelper
     from model.getrates import GetRatesRequest
+    from model.postrates import PostRatesRequest
     from controller.Helpers import resultshelper
     port = 5000
 app = Flask(__name__)
@@ -62,12 +64,33 @@ def get_average_rates_null():
 
 @app.route('/submit_rate', methods=['POST'])
 def submit_rate():
-    return 'To be implemented'
+    post_rates_request = PostRatesRequest(request.values)
+
+    if not verify_post_parameters(post_rates_request):
+        return 'Bad Request'
+
+    check_codes_sql = QueriesHelper.check_ports_query(post_rates_request)
+    cursor = g.db.cursor()
+
+    cursor.execute(check_codes_sql)
+    if not resultshelper.both_ports_in_db(cursor.fetchall()):
+        return 'Supplied codes are not supported'
+
+    insert_price_sql = QueriesHelper.post_rates_query(post_rates_request)
+    cursor.execute(insert_price_sql)
+    g.db.commit()
+    return 'Submitted'
 
 
 def verify_get_parameters(get_rates_request):
     return get_rates_request.date_to != '' and get_rates_request.date_from != '' and get_rates_request.origin != '' and \
            get_rates_request.destination != ''
+
+
+def verify_post_parameters(post_rates_request):
+    return post_rates_request.date_to != '' and post_rates_request.date_from != '' and\
+           post_rates_request.origin_code != '' and post_rates_request.destination_code != ''\
+           and post_rates_request.price is not None
 
 
 if __name__ == '__main__':

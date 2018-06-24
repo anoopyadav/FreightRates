@@ -33,6 +33,10 @@ def format_get_rates_null(cursor, begin, end):
     return json.dumps(results, default=json_serial)
 
 
+def both_ports_in_db(results):
+    return results[0][0] == 2
+
+
 def fill_in_the_blanks(results, begin, end):
     missing_days = set(get_date_range(begin, end)) - set([row['day'].isoformat() for row in results])
     for day in missing_days:
