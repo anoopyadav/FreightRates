@@ -63,14 +63,14 @@ def get_rates_query_null(get_rates_request):
 
 def post_rates_query(post_rates_request):
     return "insert into  prices (orig_code, dest_code, price, day)\
-            SELECT '{0}','{1}', 10, p.day from\
+            SELECT '{0}','{1}', {2}, p.day from\
               (\
                 select CURRENT_DATE + i as day\
-                  from generate_series(date '{2}'- CURRENT_DATE,\
-                 date '{3}' - CURRENT_DATE ) i\
+                  from generate_series(date '{3}'- CURRENT_DATE,\
+                 date '{4}' - CURRENT_DATE ) i\
               ) p\
-            ".format(post_rates_request.origin_code, post_rates_request.destination_code, post_rates_request.date_from,
-                     post_rates_request.date_to)
+            ".format(post_rates_request.origin_code, post_rates_request.destination_code, post_rates_request.price,
+                     post_rates_request.date_from, post_rates_request.date_to)
 
 
 def check_ports_query(post_rates_request):
