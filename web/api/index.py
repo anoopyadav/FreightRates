@@ -1,4 +1,4 @@
-from flask import Flask, request, g
+from flask import Flask, request, g, jsonify
 import os
 import requests
 import json
@@ -12,13 +12,16 @@ if 'local' in os.environ:
     from web.api.controller.Helpers import resultshelper
     port = 5001
 else:
-    from controller import DbHelper
-    from controller.Helpers import QueriesHelper
+    from controller import dbhelper
+    from controller.Helpers import querieshelper
     from model.getrates import GetRatesRequest
     from model.postrates import PostRatesRequest
     from model.postratescurrency import PostRatesCurrencyRequest
     from controller.Helpers import resultshelper
     port = 5000
+
+STATUS_CODE_OK = 200
+STATUS_CODE_ERROR = 400
 app = Flask(__name__)
 
 
@@ -42,14 +45,14 @@ def get_average_rates():
     get_rates_request = GetRatesRequest(request.args)
 
     if not verify_get_parameters(get_rates_request):
-        return 'Bad Request'
+        return create_bad_response('Bad Request')
 
     sql = querieshelper.get_rates_query(get_rates_request)
     cursor = g.db.cursor()
 
     cursor.execute(sql)
     results = resultshelper.format_get_rates(cursor, get_rates_request.date_from, get_rates_request.date_to)
-    return results
+    return create_response(results, STATUS_CODE_OK)
 
 
 @app.route('/rates_null')
@@ -57,14 +60,14 @@ def get_average_rates_null():
     get_rates_request = GetRatesRequest(request.args)
 
     if not verify_get_parameters(get_rates_request):
-        return 'Bad Request'
+        return create_bad_response('Bad Request')
 
     sql = querieshelper.get_rates_query_null(get_rates_request)
     cursor = g.db.cursor()
 
     cursor.execute(sql)
     results = resultshelper.format_get_rates_null(cursor, get_rates_request.date_from, get_rates_request.date_to)
-    return results
+    return create_response(results, STATUS_CODE_OK)
 
 
 @app.route('/submit_rate', methods=['POST'])
@@ -72,7 +75,7 @@ def submit_rate():
     post_rates_request = PostRatesRequest(request.values)
 
     if not verify_post_parameters(post_rates_request):
-        return 'Bad Request'
+        return create_bad_response('Bad Request')
 
     check_codes_sql = querieshelper.check_ports_query(post_rates_request)
     cursor = g.db.cursor()
@@ -84,7 +87,7 @@ def submit_rate():
     insert_price_sql = querieshelper.post_rates_query(post_rates_request)
     cursor.execute(insert_price_sql)
     g.db.commit()
-    return 'Submitted'
+    return create_response(jsonify('Submitted'), STATUS_CODE_OK)
 
 
 @app.route('/submit_rate_currency', methods=['POST'])
@@ -92,20 +95,20 @@ def submit_rate_with_currency():
     post_rates_currency_request = PostRatesCurrencyRequest(request.values)
 
     if not verify_post_currency_parameters(post_rates_currency_request):
-        return 'Bad Request'
+        return create_bad_response('Bad Request')
 
     check_codes_sql = querieshelper.check_ports_query(post_rates_currency_request)
     cursor = g.db.cursor()
 
     cursor.execute(check_codes_sql)
     if not resultshelper.both_ports_in_db(cursor.fetchall()):
-        return 'Supplied port codes are not supported'
+        return create_bad_response('Supplied port codes are not supported')
 
     # obtain latest currency information
     currency_rates = get_latest_currency_rates()
 
     if not is_valid_currency(post_rates_currency_request.currency_code, currency_rates):
-        return 'No information available for supplied currency'
+        return create_bad_response('No information available for supplied currency')
 
     post_rates_currency_request.price = convert_to_usd(post_rates_currency_request.price,
                                                        post_rates_currency_request.currency_code,
@@ -114,7 +117,7 @@ def submit_rate_with_currency():
     insert_price_sql = querieshelper.post_rates_query(post_rates_currency_request)
     cursor.execute(insert_price_sql)
     g.db.commit()
-    return 'Submitted'
+    return create_response(jsonify('Submitted'), STATUS_CODE_OK)
 
 
 def verify_get_parameters(get_rates_request):
@@ -146,6 +149,18 @@ def convert_to_usd(value, currency, currency_rates):
 
 def is_valid_currency(currency_code, currency_rates):
     return currency_code in currency_rates.keys()
+
+
+def create_response(body, status_code):
+    return app.response_class(
+        response=body,
+        status=status_code,
+        mimetype='application/json'
+    )
+
+
+def create_bad_response(message):
+    return create_response(message, STATUS_CODE_ERROR)
 
 
 if __name__ == '__main__':

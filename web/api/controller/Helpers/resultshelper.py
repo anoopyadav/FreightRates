@@ -8,7 +8,7 @@ def json_serial(obj):
     if isinstance(obj, (datetime, date)):
         return obj.isoformat()
     elif isinstance(obj, Decimal):
-        return str(obj)
+        return str(round(obj, 2))
     raise TypeError("Type %s not serializable" % type(obj))
 
 
