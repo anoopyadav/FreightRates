@@ -33,6 +33,10 @@ def teardown_request(exception):
 @app.route('/rates')
 def get_average_rates():
     get_rates_request = GetRatesRequest(request.args)
+
+    if not verify_get_parameters(get_rates_request):
+        return 'Bad Request'
+
     sql = QueriesHelper.get_rates_query(get_rates_request)
     cursor = g.db.cursor()
 
@@ -44,6 +48,10 @@ def get_average_rates():
 @app.route('/rates_null')
 def get_average_rates_null():
     get_rates_request = GetRatesRequest(request.args)
+
+    if not verify_get_parameters(get_rates_request):
+        return 'Bad Request'
+
     sql = QueriesHelper.get_rates_query_null(get_rates_request)
     cursor = g.db.cursor()
 
@@ -55,6 +63,11 @@ def get_average_rates_null():
 @app.route('/submit_rate', methods=['POST'])
 def submit_rate():
     return 'To be implemented'
+
+
+def verify_get_parameters(get_rates_request):
+    return get_rates_request.date_to != '' and get_rates_request.date_from != '' and get_rates_request.origin != '' and \
+           get_rates_request.destination != ''
 
 
 if __name__ == '__main__':
