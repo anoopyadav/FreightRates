@@ -46,7 +46,7 @@ def get_average_rates():
 
     if not verify_get_parameters(get_rates_request):
         return create_bad_response('Bad Request')
-
+    
     sql = querieshelper.get_rates_query(get_rates_request)
     cursor = g.db.cursor()
 
@@ -121,19 +121,22 @@ def submit_rate_with_currency():
 
 
 def verify_get_parameters(get_rates_request):
-    return get_rates_request.date_to != '' and get_rates_request.date_from != '' and get_rates_request.origin != '' and \
-           get_rates_request.destination != ''
+    return get_rates_request.date_to != '' and get_rates_request.date_from != '' and \
+           get_rates_request.origin_code != '' and get_rates_request.destination_code != '' \
+           and get_rates_request.origin_code != get_rates_request.destination_code
 
 
 def verify_post_parameters(post_rates_request):
     return post_rates_request.date_to != '' and post_rates_request.date_from != '' and\
-           post_rates_request.origin_code != '' and post_rates_request.destination_code != ''\
+           post_rates_request.origin_code != '' and post_rates_request.destination_code != '' \
+           and post_rates_request.origin_code != post_rates_request.destination_code \
            and post_rates_request.price is not None
 
 
 def verify_post_currency_parameters(post_rates_request):
     return post_rates_request.date_to != '' and post_rates_request.date_from != '' and\
-           post_rates_request.origin_code != '' and post_rates_request.destination_code != ''\
+           post_rates_request.origin_code != '' and post_rates_request.destination_code != '' \
+           and post_rates_request.origin_code != post_rates_request.destination_code \
            and post_rates_request.price is not None and post_rates_request.currency_code != ''
 
 
@@ -160,7 +163,7 @@ def create_response(body, status_code):
 
 
 def create_bad_response(message):
-    return create_response(message, STATUS_CODE_ERROR)
+    return create_response(json.dumps({'message': message}), STATUS_CODE_ERROR)
 
 
 if __name__ == '__main__':

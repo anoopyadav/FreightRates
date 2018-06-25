@@ -41,7 +41,7 @@ def get_codes_subquery(get_rates_request):
               select code from ports where parent_slug in (select * from originqualifiedregions) or parent_slug = lower('{1}')\
               or code = upper('{1}')\
             )\
-            ".format(get_rates_request.origin, get_rates_request.destination)
+            ".format(get_rates_request.origin_code, get_rates_request.destination_code)
 
 
 def get_rates_query(get_rates_request):
