@@ -10,6 +10,7 @@ if 'local' in os.environ:
     from web.api.model.postrates import PostRatesRequest
     from web.api.model.postratescurrency import PostRatesCurrencyRequest
     from web.api.controller.Helpers import resultshelper
+    from web.api.model.getrequesttype import GetRequestType
     port = 5001
 else:
     from controller import dbhelper
@@ -18,6 +19,7 @@ else:
     from model.postrates import PostRatesRequest
     from model.postratescurrency import PostRatesCurrencyRequest
     from controller.Helpers import resultshelper
+    from model.getrequesttype import GetRequestType
     port = 5000
 
 STATUS_CODE_OK = 200
@@ -42,32 +44,12 @@ def teardown_request(exception):
 
 @app.route('/rates')
 def get_average_rates():
-    get_rates_request = GetRatesRequest(request.args)
-
-    if not verify_get_parameters(get_rates_request):
-        return create_bad_response('Bad Request')
-    
-    sql = querieshelper.get_rates_query(get_rates_request)
-    cursor = g.db.cursor()
-
-    cursor.execute(sql)
-    results = resultshelper.format_get_rates(cursor, get_rates_request.date_from, get_rates_request.date_to)
-    return create_response(results, STATUS_CODE_OK)
+    return handle_get_rates(request, GetRequestType.GetRequest)
 
 
 @app.route('/rates_null')
 def get_average_rates_null():
-    get_rates_request = GetRatesRequest(request.args)
-
-    if not verify_get_parameters(get_rates_request):
-        return create_bad_response('Bad Request')
-
-    sql = querieshelper.get_rates_query_null(get_rates_request)
-    cursor = g.db.cursor()
-
-    cursor.execute(sql)
-    results = resultshelper.format_get_rates_null(cursor, get_rates_request.date_from, get_rates_request.date_to)
-    return create_response(results, STATUS_CODE_OK)
+    return handle_get_rates(request, GetRequestType.GetRequestNull)
 
 
 @app.route('/submit_rate', methods=['POST'])
@@ -118,6 +100,24 @@ def submit_rate_with_currency():
     cursor.execute(insert_price_sql)
     g.db.commit()
     return create_response(jsonify('Submitted'), STATUS_CODE_OK)
+
+
+def handle_get_rates(get_request, request_type):
+    get_rates_request = GetRatesRequest(get_request.args)
+
+    if not verify_get_parameters(get_rates_request):
+        return create_bad_response('Bad Request')
+
+    if request_type is GetRequestType.GetRequest:
+        sql = querieshelper.get_rates_query(get_rates_request)
+    elif request_type is GetRequestType.GetRequestNull:
+        sql = querieshelper.get_rates_query_null(get_rates_request)
+
+    cursor = g.db.cursor()
+
+    cursor.execute(sql)
+    results = resultshelper.format_get_rates(cursor, get_rates_request.date_from, get_rates_request.date_to)
+    return create_response(results, STATUS_CODE_OK)
 
 
 def verify_get_parameters(get_rates_request):
