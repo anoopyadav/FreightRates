@@ -5,10 +5,10 @@ Provides price information between two regions
 
 ## Service Endpoints
 Exposes four endpoints:
-rates - Provides average price information
-rates_null - Same as rates, but only for those ports which have 3 or more data points available
-submit_rate - Add the supplied price data to the DB (price in USD)
-submit_rate_currency - Same as submit_rate, with added currency (other than USD)
+- rates - Provides average price information
+- rates_null - Same as rates, but only for those ports which have 3 or more data points available
+- submit_rate - Add the supplied price data to the DB (price in USD)
+- submit_rate_currency - Same as submit_rate, with added currency (other than USD)
 
 ## Startup
 - Navigate to the project root (FreightRates)
