@@ -22,17 +22,6 @@ def format_get_rates(cursor, begin, end):
     return json.dumps(results, default=json_serial)
 
 
-def format_get_rates_null(cursor, begin, end):
-    results = [dict((cursor.description[i][0], value)
-                    for i, value in enumerate(row))
-               for row in cursor.fetchall()
-               ]
-
-    results = fill_in_the_blanks(results, begin, end)
-
-    return json.dumps(results, default=json_serial)
-
-
 def both_ports_in_db(results):
     return results[0][0] == 2
 

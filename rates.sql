@@ -215,8 +215,6 @@ GBSSH	South Shields	uk_sub
 --
 
 COPY prices (orig_code, dest_code, day, price) FROM stdin;
-TEST1   TEST2   2016-01-01  1000
-TEST1   TEST2   2016-01-01  2000
 CNGGZ	EETLL	2016-01-01	1244
 CNGGZ	EETLL	2016-01-01	1140
 CNGGZ	EETLL	2016-01-01	1080
