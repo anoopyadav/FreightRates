@@ -18,8 +18,8 @@ Exposes four endpoints:
 ## Usage
 - `curl "http://127.0.0.1:5000/rates?date_from=<YYYY-MM-DD>&date_to=<YYYY-MM-DD>&origin=<code_or_region>&destination_code=<code_or_region>"`
 - `curl "http://127.0.0.1:5000/rates_null?date_from=<YYYY-MM-DD>&date_to=<YYYY-MM-DD>&origin=<code_or_region>&destination_code=<code_or_region>"`
-- `curl --data "date_from=<YYYY-MM-DD>&date_to=2<YYYY-MM-DD>&origin_code=<code_or_region>&destination_code=<code_or_region>” http://127.0.0.1:5000/rates`
-- `curl --data "date_from=<YYYY-MM-DD>&date_to=2<YYYY-MM-DD>&origin_code=<code_or_region>&destination_code=<code_or_region>&currency_code=<XXX>” http://127.0.0.1:5000/rates`
+- `curl --data "date_from=<YYYY-MM-DD>&date_to=2<YYYY-MM-DD>&origin_code=<code_or_region>&destination_code=<code_or_region>&price=<number>” http://127.0.0.1:5000/submit_rate`
+- `curl --data "date_from=<YYYY-MM-DD>&date_to=2<YYYY-MM-DD>&origin_code=<code_or_region>&destination_code=<code_or_region>&currency_code=<XXX>” http://127.0.0.1:5000/submit_rate_currency`
 
 ## Notes
 - Average Price is rounded up to two decimal places
