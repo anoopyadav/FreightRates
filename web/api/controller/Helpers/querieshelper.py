@@ -53,7 +53,7 @@ def get_rates_query(get_rates_request):
 
 
 def get_rates_query_null(get_rates_request):
-    return get_codes_subquery(get_rates_request) + "select day, CASE WHEN count(*) > 3 THEN avg(price) else null END as\
+    return get_codes_subquery(get_rates_request) + "select day, CASE WHEN count(*) > 2 THEN avg(price) else null END as\
         Average_Price\
         from prices where orig_code IN (select * from originports)\
         and dest_code IN (select * from destinationports)\
