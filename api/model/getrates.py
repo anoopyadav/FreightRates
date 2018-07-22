@@ -1,8 +1,4 @@
-import os
-if 'local' in os.environ:
-    from web.api.model.request import Request
-else:
-    from model.request import Request
+from api.model.request import Request
 
 
 class GetRatesRequest(Request):

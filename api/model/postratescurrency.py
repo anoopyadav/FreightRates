@@ -1,8 +1,4 @@
-import os
-if 'local' in os.environ:
-    from web.api.model.postrates import PostRatesRequest
-else:
-    from model.postrates import PostRatesRequest
+from api.model.postrates import PostRatesRequest
 
 
 class PostRatesCurrencyRequest(PostRatesRequest):

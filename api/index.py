@@ -1,30 +1,20 @@
 from flask import Flask, request, g, jsonify
-import os
 import requests
 import json
 from decimal import Decimal
-if 'local' in os.environ:
-    from web.api.controller import dbhelper
-    from web.api.controller.Helpers import querieshelper
-    from web.api.model.getrates import GetRatesRequest
-    from web.api.model.postrates import PostRatesRequest
-    from web.api.model.postratescurrency import PostRatesCurrencyRequest
-    from web.api.controller.Helpers import resultshelper
-    from web.api.model.getrequesttype import GetRequestType
-    port = 5001
-else:
-    from controller import dbhelper
-    from controller.Helpers import querieshelper
-    from model.getrates import GetRatesRequest
-    from model.postrates import PostRatesRequest
-    from model.postratescurrency import PostRatesCurrencyRequest
-    from controller.Helpers import resultshelper
-    from model.getrequesttype import GetRequestType
-    port = 5000
-
+from api.controller import dbhelper
+from api.controller.Helpers import querieshelper, resultshelper
+from api.model.getrates import GetRatesRequest
+from api.model.postrates import PostRatesRequest
+from api.model.postratescurrency import PostRatesCurrencyRequest
+from api.model.getrequesttype import GetRequestType
 STATUS_CODE_OK = 200
 STATUS_CODE_ERROR = 400
+
 app = Flask(__name__)
+
+if __name__ == "__main__":
+    app.run()
 
 
 def connect_db():
@@ -164,7 +154,3 @@ def create_response(body, status_code):
 
 def create_bad_response(message):
     return create_response(json.dumps({'message': message}), STATUS_CODE_ERROR)
-
-
-if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=port)
