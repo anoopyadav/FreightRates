@@ -1,4 +1,0 @@
-Flask==0.10.1
-marshmallow
-psycopg2
-requests

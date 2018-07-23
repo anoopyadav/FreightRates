@@ -1,11 +1,11 @@
 version: "3"
 services:
-    web:
+    gunicorn:
       build:
-        context: ./web
-        dockerfile: Dockerfile-web
+        context: ../
+        dockerfile: Docker/Dockerfile-web
       ports:
-        - "5000:5000"
+        - "9000:9000"
       volumes:
         - .:/code
       environment:
@@ -18,3 +18,11 @@ services:
         dockerfile: Dockerfile-db
       ports:
         - "5432:5432"
+    proxy:
+      build:
+        context: .
+        dockerfile: Dockerfile-nginx
+      depends_on :
+        - gunicorn
+      ports:
+        - "5000:5000"
