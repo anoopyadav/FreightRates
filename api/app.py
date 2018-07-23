@@ -1,5 +1,5 @@
 from flask import Flask, request, g
-from api.controller import dbhelper
+from api.controller.Helpers import dbhelper
 from api.model.getrequesttype import GetRequestType
 from api.controller.getrequesthandler import GetRequestHandler
 from api.controller.postrequesthandler import PostRequestHandler
