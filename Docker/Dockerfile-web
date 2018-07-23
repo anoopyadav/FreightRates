@@ -5,4 +5,4 @@ COPY . /FrieghtRates
 WORKDIR /FrieghtRates
 RUN pip3 install -r Docker/requirements.txt
 ENTRYPOINT ["gunicorn", "-w", "4", "-b", "0.0.0.0:9000"]
-CMD ["api.index:app"]
+CMD ["api.app:app"]
